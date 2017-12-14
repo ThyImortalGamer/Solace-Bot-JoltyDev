@@ -26,22 +26,18 @@ module.exports = class extends Command {
         // This is where you place the code you want to run for your command
         if (values) values = values.split(" | ");
         if (msg.author.id != '237360479624757249') return msg.reply("Only jolty can use this command");
-        await database.query(query, values, (err, results, fields) => {
-            if (err) {
-                msg.reply(err)
-            } else {
-                var message = "Results:";
-                if (results.length > 1) {
-                    results.forEach(result => {
-                        message = `${message}\n${JSON.stringify(result)}`
-                    })
-                    msg.reply(message)
-                } else {
-                    message = `${message}\n${JSON.stringify(results)}`
-                    msg.reply(message)
-                }
-            }
-        })
+        const [results, fields] = await database.query(query, values)
+
+        var message = "Results:";
+        if (results.length > 1) {
+            results.forEach(result => {
+                message = `${message}\n${JSON.stringify(result)}`
+            })
+            msg.reply(message)
+        } else {
+            message = `${message}\n${JSON.stringify(results)}`
+            msg.reply(message)
+        }
     }
 
     async init() {

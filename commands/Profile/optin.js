@@ -30,12 +30,8 @@ module.exports = class extends Command {
             msg.send('You have already opted in!')
             return;
         }
-        await database.query(`REPLACE INTO members (userId, has) VALUES (${msg.author.id}, 1)`, [], (err, rows, fields) => {
-            if (err) return console.log("Error on replace into members:\n" + err)
-        });
-        await database.query(`INSERT INTO premium (userId, has) VALUES (${msg.author.id}, 0)`, [], (err, rows, fields) => {
-            if (err) return console.log("Error on replace into premium:\n" + err)
-        });
+        await database.query(`REPLACE INTO members (userId, has) VALUES (${msg.author.id}, 1)`, []);
+        await database.query(`INSERT INTO premium (userId, has) VALUES (${msg.author.id}, 0)`, []);
         msg.send('You have now opted in. Thank you, you will recieve the \'Nobles\' role within the next 10 seconds.')
     }
 

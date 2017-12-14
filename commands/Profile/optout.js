@@ -29,12 +29,7 @@ module.exports = class extends Command {
         if (!msg.member.roles.has(fullmember)) {
             return msg.send('You aren\'t opted in!')
         }
-        await database.query(`REPLACE INTO members (userId, has) VALUES (${msg.author.id}, 0)`, [], (err, rows, fields) => {
-            if (err) return console.log("Error on replace into members:\n" + err)
-        });
-        await database.query(`INSERT INTO premium (userId, has) VALUES (${msg.author.id}, 0)`, [], (err, rows, fields) => {
-            if (err) return console.log("Error on replace into premium:\n" + err)
-        });
+        await database.query(`REPLACE INTO members (userId, has) VALUES (${msg.author.id}, 0)`, []);
         msg.send('You have now opted out. Sad to see you go..')
     }
 

@@ -7,17 +7,14 @@ module.exports = {
 
     async run(msg) {
         
-
         if (msg.author.bot) return;
 
-        await database.query(`SELECT * FROM spamScores WHERE userId ="${msg.author.id}"`, [], async (err, rows, fields) => {
+        const [rows, fields] = await database.query(`SELECT * FROM spamScores WHERE userId ="${msg.author.id}"`, [])
             if (rows < 1) {
-                await database.query("REPLACE INTO spamScores (userId, points) VALUES (?, ?)", [msg.author.id, 1], (err, rows, fields) => {
-                    if (err) return console.log("Error on replace into spamScores:\n"+err)
-                });
+                await database.query("REPLACE INTO spamScores (userId, points) VALUES (?, ?)", [msg.author.id, 1]);
             } else {
                 rows.forEach(async row => {
-                    await database.query(`UPDATE spamScores SET points = ${row.points + 1} WHERE userId = ${msg.author.id}`);
+                    await database.query(`UPDATE spamScores SET points = ${row.points + 1} WHERE userId = ${msg.author.id}`, []);
                     
                     if(msg.channel.parentId == '384425107810025472') return;
                     
@@ -29,14 +26,10 @@ module.exports = {
                     };
                 });
             }
-        })
-
     },
 
     async init() {
-        await database.query("CREATE TABLE IF NOT EXISTS spamScores (userId VARCHAR(19) PRIMARY KEY, points INTEGER)", [], (err, rows, fields) => {
-            if(err) return console.log("Error at spamScore table creation:\n"+err)
-        })
+        await database.query("CREATE TABLE IF NOT EXISTS spamScores (userId VARCHAR(19) PRIMARY KEY, points INTEGER)", [])
     }
 
 }

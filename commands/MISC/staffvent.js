@@ -33,13 +33,11 @@ module.exports = class extends Command {
 
         let embed
 
-        await database.query("INSERT INTO staffVents (userId, vent, date) VALUES (?, ?, ?)", [msg.author.id, vent, moment.utc().format("dddd, MMMM Do YYYY, h:mm:ss a")], (err, rows, fields) => {
-            if (err) return console.log("Error on vent insert:\n" + err)
-        })
+        await database.query("INSERT INTO staffVents (userId, vent, date) VALUES (?, ?, ?)", [msg.author.id, vent, moment.utc().format("dddd, MMMM Do YYYY, h:mm:ss a")]);
 
 
         let id;
-        await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, [], async (err, rows, fields) => {
+        const [rows, fields] = await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, [], async (err, rows, fields) => {
             if (err) return console.log("Error on anonId select:\n" + err)
 
             if (rows.length >= 1) {
@@ -78,12 +76,12 @@ module.exports = class extends Command {
                         .setTimestamp();
                 }
             } else {
-                await database.query("REPLACE INTO staffAnonIds (userId) VALUES (?)", [msg.author.id], async (err, rows, fields) => {
+                await database.query("REPLACE INTO staffAnonIds (userId) VALUES (?)", [msg.author.id]);
                     if (err) return console.log("Error on anonId insert:\n" + err)
-                    await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, [], (err, rows, fields) => {
+                    const [newRows, newFields] = await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, [], (err, rows, fields) => {
                         if (err) return console.log("Error on anonId select:\n" + err)
-                        if (rows.length >= 1) {
-                            id = rows[0].id
+                        if (newRows.length >= 1) {
+                            id = newRows[0].id
                         }
                         if (vent.length >= 1024) {
                             var middle = Math.floor(vent.length / 2);
@@ -119,7 +117,7 @@ module.exports = class extends Command {
                                 .setTimestamp();
                         }
                     })
-                })
+
             }
 
             this.staffVentChannel.send({
@@ -132,12 +130,8 @@ module.exports = class extends Command {
 
     async init() {
         this.staffVentChannel = this.client.channels.get('384267589037326336');
-        await database.query("CREATE TABLE IF NOT EXISTS staffVents (userId TEXT, vent TEXT, date TEXT)", [], (err, rows, fields) => {
-            if (err) console.log("Error on vent table creation:\n" + err)
-        });
-        await database.query("CREATE TABLE IF NOT EXISTS staffAnonIds (userId VARCHAR(19) PRIMARY KEY, id INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE KEY)", [], (err, rows, fields) => {
-            if (err) console.log("Error on anonId table creation:\n" + err)
-        });
+        await database.query("CREATE TABLE IF NOT EXISTS staffVents (userId TEXT, vent TEXT, date TEXT)", []);
+        await database.query("CREATE TABLE IF NOT EXISTS staffAnonIds (userId VARCHAR(19) PRIMARY KEY, id INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE KEY)", []);
     }
 
 };

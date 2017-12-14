@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const path = require('path');
 const config = require(path.resolve(__dirname, "../config.json"));
 var SQL = null;
@@ -14,11 +14,7 @@ module.exports = {
         });
     },
 
-    async query(querystr, postmap, callback) { // Database queries
-        try {
-            await SQL.query(querystr, postmap, callback);
-        } catch (err) {
-            console.log("Error: " + err)
-        }
+    query(querystr, postmap) { // Database queries
+        return SQL.query(querystr, postmap);
     }
 }

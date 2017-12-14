@@ -1,4 +1,4 @@
-const { Command } = require('klasa');
+const {Command} = require('klasa');
 
 const path = require('path');
 const database = require(path.resolve(__dirname, "../../funcs/database.js"));
@@ -23,15 +23,9 @@ module.exports = class extends Command {
 
     async run(msg) {
         // This is where you place the code you want to run for your command
-        if (!msg.member.roles.has('383714876222210071')) return msg.reply("You must be a staff team leader to use this command.")
-        await database.query("TRUNCATE anonIds", [], (err, rows, fields)=>{
-            if(err) return console.log("Error emptying anonIds:\n"+err)
-            this.ventChannel.send("Anon IDs have been reset");
-        })
-        await database.query("TRUNCATE staffAnonIds", [], (err, rows, fields)=>{
-            if(err) return console.log("Error emptying staffAnonIds:\n"+err)
-            this.staffVentChannel.send("Anon IDs have been reset");
-        })
+        //if (!msg.member.roles.has('383714876222210071')) return msg.reply("You must be a staff team leader to use this command.")
+        await database.query("TRUNCATE anonIds", []).then(this.ventChannel.send("Anon IDs have been reset"));
+        await database.query("TRUNCATE staffAnonIds", []).then(this.staffVentChannel.send("Anon IDs have been reset"));
 
     }
 

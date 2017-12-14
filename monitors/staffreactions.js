@@ -6,7 +6,7 @@ module.exports = class extends Monitor {
 
     constructor(...args) {
         super(...args, {
-            enabled: false,
+            enabled: true,
             ignoreBots: false,
             ignoreSelf: false,
             ignoreOthers: false
@@ -14,7 +14,6 @@ module.exports = class extends Monitor {
     }
 
      async run(msg) {
-        console.log('staffreactions.js has run')
         if(!msg.guild) return;
         if(msg.channel.id == suggestions) {
             msg.react('👍')
@@ -26,7 +25,6 @@ module.exports = class extends Monitor {
 
     async init() {
         // You can optionally define this method which will be run when the bot starts (after login, so discord data is available via this.client)
-        console.log('staffreactions.js has init\'d')
     }
 
 };

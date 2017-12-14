@@ -17,7 +17,6 @@ module.exports = class extends Monitor {
         if(!msg.guild) return;
         if(msg.channel.id == suggestionschannel) {
             msg.react('👍')
-            setTimeout(function () { msg.react('👎') }, 100)
         }
     }
 

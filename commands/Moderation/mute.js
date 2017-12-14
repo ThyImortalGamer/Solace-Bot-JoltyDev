@@ -45,9 +45,7 @@ module.exports = class extends Command {
         }
         userRoles = userRoles.join(" ");
 
-        await database.query("REPLACE INTO mutedUserRoles (userId, roles) VALUES (?, ?)", [muteduser.id, userRoles], (err, rows, fields) => {
-            if (err) console.log("Error on insert:\n" + err)
-        });
+        await database.query("REPLACE INTO mutedUserRoles (userId, roles) VALUES (?, ?)", [muteduser.id, userRoles]);
 
         if (!reason) {
             channelmessage = `${muteduser}\n**You have been muted!**\n\n**Staff Member who issued mute: __${msg.author.tag}__**\n\nPlease wait for a member of staff to speak to you.`;
@@ -131,9 +129,7 @@ module.exports = class extends Command {
 
     async init() {
         this.chanLogs = this.client.channels.get('384057004592857092');
-        database.query("CREATE TABLE IF NOT EXISTS mutedUserRoles (userId VARCHAR(19) PRIMARY KEY, roles TEXT)", [], (err, rows, fields) => {
-            if (err) console.log("Error on mute table creation:\n" + err)
-        });
+        database.query("CREATE TABLE IF NOT EXISTS mutedUserRoles (userId VARCHAR(19) PRIMARY KEY, roles TEXT)", []);
     }
 
 };

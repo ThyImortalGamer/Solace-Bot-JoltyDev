@@ -24,11 +24,10 @@ module.exports = class extends Command {
 
     async run(msg, [...params]) {
         // This is where you place the code you want to run for your command
-        await database.query(`SELECT * FROM spamScores WHERE userId ="${msg.author.id}"`, [], (err, rows, fields) => {
+        const [rows, fields] = await database.query(`SELECT * FROM spamScores WHERE userId ="${msg.author.id}"`, [])
             rows.forEach(row => {
                 return msg.reply(`Your spam score is ${row.points}. Starting at 10 points you will be warned, and at 15 points you will be muted.`)
             })
-        })
     }
 
     async init() {
