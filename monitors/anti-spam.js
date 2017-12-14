@@ -1,5 +1,7 @@
-const { Monitor } = require('klasa');
-const path = require('path'); 
+const {
+    Monitor
+} = require('klasa');
+const path = require('path');
 const antiSpam = require(path.resolve(__dirname, "../funcs/anti-spamdb.js"))
 module.exports = class extends Monitor {
 
@@ -14,9 +16,9 @@ module.exports = class extends Monitor {
 
     async run(msg) {
         // This is where you place the code you want to run for your monitor
-        if(!msg.guild) return;
-        if(msg.channel.parentId == '384425107810025472') return;
-		antiSpam.run(msg);
+        if (!msg.guild) return;
+        if (msg.channel.parentId == '384425107810025472') return;
+        antiSpam.run(msg);
     }
 
     async init() {

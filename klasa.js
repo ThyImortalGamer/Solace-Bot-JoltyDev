@@ -2,9 +2,9 @@ const {Client} = require('klasa');
 const config = require('./config.json');
 const database = require("./funcs/database")
 
-Client.defaultPermissionLevels
-    .addLevel(5, true, (client, msg) => msg.guild && msg.member.roles.has('383664307243712515'))
-    .addLevel(6, true, (client, msg) => msg.guild && msg.member.permissions.has('ADMINISTRATOR'));
+//Client.defaultPermissionLevels
+//    .addLevel(5, true, (client, msg) => msg.guild && msg.member.roles.has('383664307243712515'))
+//    .addLevel(6, true, (client, msg) => msg.guild && msg.member.permissions.has('ADMINISTRATOR'));
 
 const client = new Client({
     prefix: ['~', 'Jol, ', 'Jolty, '],

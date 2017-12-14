@@ -20,6 +20,7 @@
     "path": "^0.12.7",
     "sqlite": "^2.8.0",
     "sqlite3-promise": "^1.0.3",
+    "webhook-discord": "^2.0.6",
     "ytdl-core": "^0.18.2"
   },
   "devDependencies": {},

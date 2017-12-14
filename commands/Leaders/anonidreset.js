@@ -2,6 +2,9 @@ const {Command} = require('klasa');
 
 const path = require('path');
 const database = require(path.resolve(__dirname, "../../funcs/database.js"));
+const config = require(path.resolve(__dirname, "../../config.json"));
+const randomVariableName = require('webhook-discord');
+const webhook = new randomVariableName(config.modLogUrl);
 
 module.exports = class extends Command {
 
@@ -23,10 +26,12 @@ module.exports = class extends Command {
 
     async run(msg) {
         // This is where you place the code you want to run for your command
-        //if (!msg.member.roles.has('383714876222210071')) return msg.reply("You must be a staff team leader to use this command.")
+        if (!msg.member.roles.has('383714876222210071')) return msg.reply("You must be a staff team leader to use this command.")
+        
+        webhook.custom("Anon IDs reset", `${msg.member}`, "Anon IDs were reset by", "#f47a42")
+
         await database.query("TRUNCATE anonIds", []).then(this.ventChannel.send("Anon IDs have been reset"));
         await database.query("TRUNCATE staffAnonIds", []).then(this.staffVentChannel.send("Anon IDs have been reset"));
-
     }
 
     async init() {

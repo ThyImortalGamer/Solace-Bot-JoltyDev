@@ -34,14 +34,49 @@ module.exports = class extends Command {
         let embed
 
         await database.query("INSERT INTO staffVents (userId, vent, date) VALUES (?, ?, ?)", [msg.author.id, vent, moment.utc().format("dddd, MMMM Do YYYY, h:mm:ss a")]);
+         let id;
+        const [rows, fields] = await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, []);
+        if (rows.length >= 1) {
+            id = rows[0].id
+            if (vent.length >= 1024) {
+                var middle = Math.floor(vent.length / 2);
+                var before = vent.indexOf(' ', middle);
+                var after = vent.lastIndexOf(' ', middle + 1);
 
+                if (middle - before < after - middle) {
+                    middle = before;
+                } else {
+                    middle = after;
+                }
 
-        let id;
-        const [rows, fields] = await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, [], async (err, rows, fields) => {
-            if (err) return console.log("Error on anonId select:\n" + err)
+                var vent1 = vent.substr(0, middle);
+                var vent2 = vent.substr(middle + 1);
 
-            if (rows.length >= 1) {
-                id = rows[0].id
+                embed = new this.client.methods.Embed()
+                    .setTitle("ANONYMOUS VENT")
+                    .setDescription("To post an anonymous vent, go to dms with the bot and use the command ~vent followed by your message, the bot will then post your vent anonymously here.")
+                    .setColor("#edff2d")
+                    .addField("Anon id:", `Anon#${id}`)
+                    .addField("Vent content Part 1:", vent1)
+                    .addField("Vent content Part 2:", vent2)
+                    .addField("DISCLAIMER", "__***Vents are logged with their author in the event of abuse, the log will never be looked at unless a vent violates guild rules.***__")
+                    .setTimestamp();
+            } else if (vent.length < 1024) {
+                embed = new this.client.methods.Embed()
+                    .setTitle("ANONYMOUS VENT")
+                    .setDescription("To post an anonymous vent, go to dms with the bot and use the command ~vent followed by your message, the bot will then post your vent anonymously here.")
+                    .setColor("#edff2d")
+                    .addField("Anon id:", `Anon#${id}`)
+                    .addField("Vent content:", vent)
+                    .addField("DISCLAIMER", "__***Vents are logged with their author in the event of abuse, the log will never be looked at unless a vent violates guild rules.***__")
+                    .setTimestamp();
+            }
+        } else {
+            await database.query(`REPLACE INTO staffAnonIds (userId) VALUES (?)`, [msg.author.id])
+            const [newRows, newFields] = await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, []);
+                if (newRows.length >= 1) {
+                    id = newRows[0].id
+                }
                 if (vent.length >= 1024) {
                     var middle = Math.floor(vent.length / 2);
                     var before = vent.indexOf(' ', middle);
@@ -55,6 +90,8 @@ module.exports = class extends Command {
 
                     var vent1 = vent.substr(0, middle);
                     var vent2 = vent.substr(middle + 1);
+
+
 
                     embed = new this.client.methods.Embed()
                         .setTitle("ANONYMOUS VENT")
@@ -75,61 +112,17 @@ module.exports = class extends Command {
                         .addField("DISCLAIMER", "__***Vents are logged with their author in the event of abuse, the log will never be looked at unless a vent violates guild rules.***__")
                         .setTimestamp();
                 }
-            } else {
-                await database.query("REPLACE INTO staffAnonIds (userId) VALUES (?)", [msg.author.id]);
-                    if (err) return console.log("Error on anonId insert:\n" + err)
-                    const [newRows, newFields] = await database.query(`SELECT * FROM staffAnonIds WHERE userId="${msg.author.id}"`, [], (err, rows, fields) => {
-                        if (err) return console.log("Error on anonId select:\n" + err)
-                        if (newRows.length >= 1) {
-                            id = newRows[0].id
-                        }
-                        if (vent.length >= 1024) {
-                            var middle = Math.floor(vent.length / 2);
-                            var before = vent.indexOf(' ', middle);
-                            var after = vent.lastIndexOf(' ', middle + 1);
-
-                            if (middle - before < after - middle) {
-                                middle = before;
-                            } else {
-                                middle = after;
-                            }
-
-                            var vent1 = vent.substr(0, middle);
-                            var vent2 = vent.substr(middle + 1);
-
-                            embed = new this.client.methods.Embed()
-                                .setTitle("ANONYMOUS VENT")
-                                .setDescription("To post an anonymous vent, go to dms with the bot and use the command ~vent followed by your message, the bot will then post your vent anonymously here.")
-                                .setColor("#edff2d")
-                                .addField("Anon id:", `Anon#${id}`)
-                                .addField("Vent content Part 1:", vent1)
-                                .addField("Vent content Part 2:", vent2)
-                                .addField("DISCLAIMER", "__***Vents are logged with their author in the event of abuse, the log will never be looked at unless a vent violates guild rules.***__")
-                                .setTimestamp();
-                        } else if (vent.length < 1024) {
-                            embed = new this.client.methods.Embed()
-                                .setTitle("ANONYMOUS VENT")
-                                .setDescription("To post an anonymous vent, go to dms with the bot and use the command ~vent followed by your message, the bot will then post your vent anonymously here.")
-                                .setColor("#edff2d")
-                                .addField("Anon id:", `Anon#${id}`)
-                                .addField("Vent content:", vent)
-                                .addField("DISCLAIMER", "__***Vents are logged with their author in the event of abuse, the log will never be looked at unless a vent violates guild rules.***__")
-                                .setTimestamp();
-                        }
-                    })
-
-            }
-
-            this.staffVentChannel.send({
-                embed
-            }).catch((err) => {
-                if (err) msg.reply("I appologize, something went wrong, please try sending your message again.")
-            });
+        }
+        this.ventChannel.send({
+            embed
+        }).catch((err) => {
+            if (err) msg.reply("I appologize, something went wrong, please try sending your message again.")
         });
+
     }
 
     async init() {
-        this.staffVentChannel = this.client.channels.get('384267589037326336');
+        this.ventChannel = this.client.channels.get('384267589037326336');
         await database.query("CREATE TABLE IF NOT EXISTS staffVents (userId TEXT, vent TEXT, date TEXT)", []);
         await database.query("CREATE TABLE IF NOT EXISTS staffAnonIds (userId VARCHAR(19) PRIMARY KEY, id INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE KEY)", []);
     }

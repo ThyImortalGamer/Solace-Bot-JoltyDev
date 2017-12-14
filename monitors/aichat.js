@@ -3,8 +3,10 @@ const {
 } = require('klasa');
 const path = require('path');
 const config = require(path.resolve(__dirname, "../config.json"));
-const apiai = require('apiai')(config.aiToken)
-const APIAI_SESSION_ID = Math.floor(Math.random() * 1000000)
+const apiai = require('apiai')(config.aiToken);
+const APIAI_SESSION_ID = Math.floor(Math.random() * 1000000);
+//const randomVariableName = require('webhook-discord');
+//const webhook = new randomVariableName(config.chatbotUrl);
 
 module.exports = class extends Monitor {
 
@@ -26,10 +28,11 @@ module.exports = class extends Monitor {
         let apiaiReq = apiai.textRequest(msg.content.substring(23), {
             sessionId: APIAI_SESSION_ID
         });
-
+        
         apiaiReq.on('response', (response) => {
             let aiText = response.result.fulfillment.speech;
-            msg.reply(aiText);
+            msg.channel.send(aiText)
+            //webhook.custom("Jolty the ChatBot", aiText, "Response");
         });
 
         apiaiReq.on('error', (error) => {

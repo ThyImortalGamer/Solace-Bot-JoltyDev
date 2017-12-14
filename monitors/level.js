@@ -2,8 +2,9 @@ const {
     Monitor
 } = require('klasa');
 const path = require('path');
-const database = require(path.resolve(__dirname, "../funcs/database.js"))
-const fullmember = '383768374485712896'
+const database = require(path.resolve(__dirname, "../funcs/database.js"));
+const fullmember = '383768374485712896';
+
 module.exports = class extends Monitor {
 
     constructor(...args) {
